@@ -1,7 +1,12 @@
 [package]
 name = "streams"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
+license = "MIT"
+authors = ["Raman Hafiyatulin <r.gafiyatullin@me>"]
+documentation = "https://docs.rs/streams"
+repository = "https://github.com/RGafiyatullin/streams-rs"
+description = "A collection of stream-extensions that are missing in the `futures` crate"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
