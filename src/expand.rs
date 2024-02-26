@@ -121,11 +121,10 @@ where
                 *last_poll = Poll::Ready(Some(newer));
                 last_poll.clone().map(|opt| opt.map(Ok))
             }
-            (Poll::Ready(terminal), last_poll) => {
-                assert!(!terminal.as_ref().map(Result::is_ok).unwrap_or(false));
+            (Poll::Ready(term @ (None | Some(Err(_)))), last_poll) => {
                 *last_poll = Poll::Ready(None);
                 *this.terminated = true;
-                Poll::Ready(terminal)
+                Poll::Ready(term)
             }
         }
     }
@@ -147,10 +146,9 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::future;
-    use std::future::Future;
+    use futures::{stream, StreamExt};
 
-    use futures::{stream, FutureExt, StreamExt};
+    use crate::test_utils::ready_after_n_polls;
 
     use super::*;
 
@@ -231,18 +229,5 @@ mod tests {
                 .await,
             vec![Ok(1), Ok(2), Err(())]
         );
-    }
-
-    fn ready_after_n_polls<V>(value: V, mut polls: usize) -> impl Future<Output = V> {
-        let mut value = Some(value);
-        future::poll_fn(move |_cx| {
-            if let Some(next) = polls.checked_sub(1) {
-                polls = next;
-                Poll::Pending
-            } else {
-                Poll::Ready(value.take().expect("value has been taken"))
-            }
-        })
-        .fuse()
     }
 }
